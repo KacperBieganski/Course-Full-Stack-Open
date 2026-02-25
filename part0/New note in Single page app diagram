@@ -1,0 +1,16 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    Note right of browser: The user types a note and clicks "Save"
+    
+    Note right of browser: The browser's JS event handler prevents the default form submit. It immediately adds the new note to the local DOM, updating the screen.
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    activate server
+    Note right of server: The request contains the new note as a JSON payload: { content: "8910", date: "2026-02-25T14:19:55.061Z" }
+    Note right of server: The server processes the JSON data and adds it to its array.
+    server-->>browser: HTTP status 201 Created
+    deactivate server
+
+    Note right of browser: The browser stays on the current page. No further HTTP requests for HTML, CSS, or JS are made.
