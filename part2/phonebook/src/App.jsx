@@ -109,13 +109,19 @@ const App = () => {
             notify(`Updated ${returnedPerson.name}'s number`);
           })
           .catch((error) => {
-            notify(
-              `Information of ${existingPerson.name} has already been removed from server`,
-              "error",
-            );
-            setPersons(persons.filter((p) => p.id !== existingPerson.id));
-            setNewName("");
-            setNewNumber("");
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.error
+            ) {
+              notify(error.response.data.error, "error");
+            } else {
+              notify(
+                `Information of ${existingPerson.name} has already been removed from server`,
+                "error",
+              );
+              setPersons(persons.filter((p) => p.id !== existingPerson.id));
+            }
           });
       }
       return;
@@ -124,16 +130,28 @@ const App = () => {
     const personObject = {
       name: newName,
       number: newNumber,
-      id: String(persons.length + 1),
     };
 
-    personService.create(personObject).then((returnedPerson) => {
-      setPersons(persons.concat(returnedPerson));
-      setNewName("");
-      setNewNumber("");
+    personService
+      .create(personObject)
+      .then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
 
-      notify(`Added ${returnedPerson.name}`);
-    });
+        notify(`Added ${returnedPerson.name}`);
+      })
+      .catch((error) => {
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          notify(error.response.data.error, "error");
+        } else {
+          notify("Server error occurred", "error");
+        }
+      });
   };
 
   const deletePerson = (id, name) => {
