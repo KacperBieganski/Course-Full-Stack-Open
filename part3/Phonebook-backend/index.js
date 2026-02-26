@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("dist"));
 
-morgan.token("post-data", (request, response) => {
+morgan.token("post-data", (request, _response) => {
   if (request.method === "POST") {
     return JSON.stringify(request.body);
   }
@@ -22,13 +22,13 @@ app.use(
   ),
 );
 
-app.get("/api/persons", (request, response) => {
+app.get("/api/persons", (_request, response) => {
   Person.find({}).then((persons) => {
     response.json(persons);
   });
 });
 
-app.get("/info", (request, response) => {
+app.get("/info", (_request, response) => {
   Person.countDocuments({}).then((count) => {
     const timeOfRequest = new Date();
 
@@ -72,7 +72,7 @@ app.put("/api/persons/:id", (request, response, next) => {
 
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
